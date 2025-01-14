@@ -2,12 +2,16 @@ package sdk
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"net/http"
+	"net/url"
 	"sync"
 
 	"github.com/abmpio/configurationx"
 	optCasdoor "github.com/abmpio/configurationx/options/casdoor"
 	"github.com/casdoor/casdoor-go-sdk/casdoorsdk"
+	"github.com/go-resty/resty/v2"
 )
 
 type ClientX struct {
@@ -56,6 +60,18 @@ func NewCassdorClientX(config *casdoorsdk.AuthConfig) *ClientX {
 	client := casdoorsdk.NewClientWithConf(config)
 	x.Client = client
 	return x
+}
+
+func GetSSOApplicationName() string {
+	casdoorOpt := &optCasdoor.CasdoorOptions{}
+	configurationx.GetInstance().UnmarshalPropertiesTo(optCasdoor.ConfigurationKey, casdoorOpt)
+	return casdoorOpt.ApplicationName
+}
+
+func GetOrganizationName() string {
+	casdoorOpt := &optCasdoor.CasdoorOptions{}
+	configurationx.GetInstance().UnmarshalPropertiesTo(optCasdoor.ConfigurationKey, casdoorOpt)
+	return casdoorOpt.OrganizationName
 }
 
 func NewCassdorClientXFromGlobal() *ClientX {
@@ -113,4 +129,58 @@ func (x *ClientX) GetRolesByOwner(owner string) ([]*casdoorsdk.Role, error) {
 	}
 	return roles, nil
 
+}
+
+type requestOptions struct {
+	queryParams url.Values
+	bodyValue   interface{}
+	formData    map[string]string
+	accessToken string
+}
+
+func (c *ClientX) doRequestWithResty(url, httpMethod string, opts ...func(o *requestOptions)) (*resty.Response, error) {
+	client := resty.New()
+	r := client.R().
+		EnableTrace().
+		SetHeader("Content-Type", "application/json").
+		SetHeader("Accept-Language", "zh")
+
+	requestOptions := &requestOptions{}
+	for _, eachOpt := range opts {
+		eachOpt(requestOptions)
+	}
+	if len(requestOptions.accessToken) > 0 {
+		r.SetHeader("Authorization", fmt.Sprintf("Bearer %s", requestOptions.accessToken))
+	}
+	// queryParams
+	if len(requestOptions.queryParams) > 0 {
+		r.SetQueryParamsFromValues(requestOptions.queryParams)
+	}
+	if len(requestOptions.formData) > 0 {
+		r.SetFormData(requestOptions.formData)
+	}
+	// ignore response?
+	r.SetResult(&casdoorsdk.Response{})
+	r.SetError(&casdoorsdk.Response{})
+	if requestOptions.bodyValue != nil {
+		r.SetBody(requestOptions.bodyValue)
+	}
+	resp, err := r.Execute(httpMethod, url)
+	return resp, err
+}
+
+func (c *ClientX) unmarshalResponseValue(resp *resty.Response) (*casdoorsdk.Response, error) {
+	if resp.IsSuccess() {
+		casdoorRes, ok := resp.Result().(*casdoorsdk.Response)
+		if ok {
+			return casdoorRes, nil
+		}
+	} else {
+		casdoorRes, ok := resp.Error().(*casdoorsdk.Response)
+		if ok {
+			return casdoorRes, nil
+		}
+	}
+	body := string(resp.Body())
+	return nil, errors.New(body)
 }

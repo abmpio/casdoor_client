@@ -71,7 +71,7 @@ func (x *ClientX) SendVerificationCode(f *VerificationForm) (bool, error) {
 		return false, err
 	}
 
-	resp, err := x.DoPost("send-verification-code", nil, bytes, true, false)
+	resp, err := x.Client.DoPost("send-verification-code", nil, bytes, true, false)
 	if err != nil {
 		return false, err
 	}
