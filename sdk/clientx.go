@@ -63,21 +63,26 @@ func NewCassdorClientX(config *casdoorsdk.AuthConfig) *ClientX {
 }
 
 func GetSSOApplicationName() string {
-	casdoorOpt := &optCasdoor.CasdoorOptions{}
-	configurationx.GetInstance().UnmarshalPropertiesTo(optCasdoor.ConfigurationKey, casdoorOpt)
+	casdoorOpt := GetGlobalCasdoorOptions()
 	return casdoorOpt.ApplicationName
 }
 
 func GetOrganizationName() string {
-	casdoorOpt := &optCasdoor.CasdoorOptions{}
-	configurationx.GetInstance().UnmarshalPropertiesTo(optCasdoor.ConfigurationKey, casdoorOpt)
+	casdoorOpt := GetGlobalCasdoorOptions()
 	return casdoorOpt.OrganizationName
 }
 
-func NewCassdorClientXFromGlobal() *ClientX {
+// get casdoor global options
+func GetGlobalCasdoorOptions() *optCasdoor.CasdoorOptions {
 	casdoorOpt := &optCasdoor.CasdoorOptions{}
 	configurationx.GetInstance().UnmarshalPropertiesTo(optCasdoor.ConfigurationKey, casdoorOpt)
-	authConfig := &casdoorsdk.AuthConfig{
+	casdoorOpt.Normalize()
+	return casdoorOpt
+}
+
+// create casdoorsdk.AuthConfig instance from optCasdoor.CasdoorOptions
+func CasdoorAuthConfigFromCasdoorOptions(casdoorOpt *optCasdoor.CasdoorOptions) *casdoorsdk.AuthConfig {
+	return &casdoorsdk.AuthConfig{
 		Endpoint:         casdoorOpt.Endpoint,
 		ClientId:         casdoorOpt.ClientId,
 		ClientSecret:     casdoorOpt.ClientSecret,
@@ -85,7 +90,12 @@ func NewCassdorClientXFromGlobal() *ClientX {
 		OrganizationName: casdoorOpt.OrganizationName,
 		ApplicationName:  casdoorOpt.ApplicationName,
 	}
-	return NewCassdorClientX(authConfig)
+}
+
+// 创建全局配置的casdoor client
+func NewCassdorClientXFromGlobal() *ClientX {
+	casdoorOpt := GetGlobalCasdoorOptions()
+	return NewCassdorClientX(CasdoorAuthConfigFromCasdoorOptions(casdoorOpt))
 }
 
 // get organization list by owner
