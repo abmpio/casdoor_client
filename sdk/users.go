@@ -14,14 +14,14 @@ func (x *ClientX) ResetPhone(accessToken string, code string, newPhone string) e
 	param["code"] = code
 
 	url := x.GetUrl("reset-email-or-phone", nil)
-	resp, err := x.doRequestWithResty(url, resty.MethodPost, func(o *requestOptions) {
+	resp, err := doRequestWithResty(url, resty.MethodPost, func(o *requestOptions) {
 		o.accessToken = accessToken
 		o.formData = param
 	})
 	if err != nil {
 		return err
 	}
-	result, err := x.unmarshalResponseValue(resp)
+	result, err := unmarshalResponseValue(resp)
 	if err != nil {
 		return err
 	}
@@ -39,14 +39,14 @@ func (x *ClientX) ResetEmail(accessToken string, code string, newEmail string) e
 	param["code"] = code
 
 	url := x.GetUrl("reset-email-or-phone", nil)
-	resp, err := x.doRequestWithResty(url, resty.MethodPost, func(o *requestOptions) {
+	resp, err := doRequestWithResty(url, resty.MethodPost, func(o *requestOptions) {
 		o.accessToken = accessToken
 		o.formData = param
 	})
 	if err != nil {
 		return err
 	}
-	result, err := x.unmarshalResponseValue(resp)
+	result, err := unmarshalResponseValue(resp)
 	if err != nil {
 		return err
 	}
