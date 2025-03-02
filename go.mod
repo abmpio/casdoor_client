@@ -7,6 +7,7 @@ require (
 	github.com/abmpio/libx v0.0.0-20241029040836-37d1161ba509
 	github.com/casdoor/casdoor-go-sdk v1.3.0
 	github.com/go-resty/resty/v2 v2.16.3
+	github.com/nyaruka/phonenumbers v1.5.0
 )
 
 require (
@@ -23,12 +24,13 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.15.0 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
+	golang.org/x/exp v0.0.0-20240525044651-4c93da0ed11d // indirect
 	golang.org/x/net v0.33.0 // indirect
 	golang.org/x/oauth2 v0.13.0 // indirect
 	golang.org/x/sys v0.28.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
-	google.golang.org/protobuf v1.31.0 // indirect
+	google.golang.org/protobuf v1.34.1 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
