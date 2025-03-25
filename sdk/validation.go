@@ -24,7 +24,7 @@ import (
 )
 
 var (
-	rePhone             *regexp.Regexp
+	RePhone             *regexp.Regexp
 	ReWhiteSpace        *regexp.Regexp
 	ReFieldWhiteList    *regexp.Regexp
 	ReUserName          *regexp.Regexp
@@ -32,7 +32,7 @@ var (
 )
 
 func init() {
-	rePhone, _ = regexp.Compile(`(\d{3})\d*(\d{4})`)
+	RePhone, _ = regexp.Compile(`(\d{3})\d*(\d{4})`)
 	ReWhiteSpace, _ = regexp.Compile(`\s`)
 	ReFieldWhiteList, _ = regexp.Compile(`^[A-Za-z0-9]+$`)
 	ReUserName, _ = regexp.Compile("^[a-zA-Z0-9]+([-._][a-zA-Z0-9]+)*$")
