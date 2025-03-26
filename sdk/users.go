@@ -106,7 +106,9 @@ func (x *ClientX) UnlinkUserOAuth(user casdoorsdk.User, providerType string) err
 		return err
 	}
 
-	resp, err := x.DoPost("unlink", nil, postBytes, false, false)
+	resp, err := x.DoPost("unlink", map[string]string{
+		"userId": fmt.Sprintf("%s/%s", user.Owner, user.Name),
+	}, postBytes, false, false)
 	if err != nil {
 		return err
 	}
