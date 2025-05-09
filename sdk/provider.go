@@ -7,6 +7,17 @@ import (
 	"github.com/casdoor/casdoor-go-sdk/casdoorsdk"
 )
 
+const (
+	ProviderCategory_OAuth        = "OAuth"
+	ProviderCategory_Email        = "Email"
+	ProviderCategory_SMS          = "SMS"
+	ProviderCategory_Storage      = "Storage"
+	ProviderCategory_SAML         = "SAML"
+	ProviderCategory_Payment      = "Payment"
+	ProviderCategory_Captcha      = "Captcha"
+	ProviderCategory_Notification = "Notification"
+)
+
 // get provider with secret
 // owner: provider owner,can be admin, organization name...
 // name: provider name
