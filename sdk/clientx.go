@@ -20,24 +20,10 @@ type httpClientWithLang struct {
 	Lang string
 }
 
-type CasdoorAppBuiltInOptions struct {
-	Endpoint         string `json:"endpoint,omitempty"`
-	ClientId         string `json:"clientId,omitempty"`
-	ClientSecret     string `json:"clientSecret,omitempty"`
-	Certificate      string `json:"certificate,omitempty"`
-	OrganizationName string `json:"organizationName,omitempty"`
-	ApplicationName  string `json:"applicationName,omitempty"`
-
-	// file path for Certificate
-	CertificateFilePath string `json:"certificateFilePath,omitempty"`
-}
-
 var (
 	_global_clientx              *ClientX
 	_global_clientx_instanceOnce sync.Once
 
-	// app-build-in/build-in casdoor options
-	_builtInAdminCasdoorOptions *optCasdoor.CasdoorOptions
 	// built-in admin client
 	_builtInAdminClientx               *ClientX
 	_builtInAdminClientx_instanceOnece sync.Once
@@ -60,9 +46,7 @@ func GetBuiltInAdminClientX() *ClientX {
 		return _builtInAdminClientx
 	}
 	_global_clientx_instanceOnce.Do(func() {
-		if _builtInAdminCasdoorOptions != nil {
-			_builtInAdminClientx = NewCassdorClientX(CasdoorAuthConfigFromCasdoorOptions(_builtInAdminCasdoorOptions))
-		}
+		_builtInAdminClientx = NewCassdorClientX(CasdoorAuthConfigFromCasdoorOptions(GetGlobalCasdoorOptions(), true))
 	})
 	return _builtInAdminClientx
 }
@@ -103,37 +87,40 @@ func GetOrganizationName() string {
 
 // get casdoor global options
 func GetGlobalCasdoorOptions() *optCasdoor.CasdoorOptions {
-	casdoorOpt := &optCasdoor.CasdoorOptions{}
-	configurationx.GetInstance().UnmarshalPropertiesTo(optCasdoor.ConfigurationKey, casdoorOpt)
-	casdoorOpt.Normalize()
-	return casdoorOpt
-}
-
-// get built-in admin casdoor options
-// for built-in/app-built-in
-func SetBuiltInAdminCasdoorOptions(opt *optCasdoor.CasdoorOptions) {
-	if opt != nil {
-		opt.Normalize()
-	}
-	_builtInAdminCasdoorOptions = opt
+	return configurationx.GetInstance().Casdoor
+	// casdoorOpt := &optCasdoor.CasdoorOptions{}
+	// configurationx.GetInstance().UnmarshalPropertiesTo(optCasdoor.ConfigurationKey, casdoorOpt)
+	// casdoorOpt.Normalize()
+	// return casdoorOpt
 }
 
 // create casdoorsdk.AuthConfig instance from optCasdoor.CasdoorOptions
-func CasdoorAuthConfigFromCasdoorOptions(casdoorOpt *optCasdoor.CasdoorOptions) *casdoorsdk.AuthConfig {
-	return &casdoorsdk.AuthConfig{
-		Endpoint:         casdoorOpt.Endpoint,
-		ClientId:         casdoorOpt.ClientId,
-		ClientSecret:     casdoorOpt.ClientSecret,
-		Certificate:      casdoorOpt.Certificate,
-		OrganizationName: casdoorOpt.OrganizationName,
-		ApplicationName:  casdoorOpt.ApplicationName,
+func CasdoorAuthConfigFromCasdoorOptions(casdoorOpt *optCasdoor.CasdoorOptions, isBuiltIn bool) *casdoorsdk.AuthConfig {
+	if !isBuiltIn {
+		return &casdoorsdk.AuthConfig{
+			Endpoint:         casdoorOpt.Endpoint,
+			ClientId:         casdoorOpt.ClientId,
+			ClientSecret:     casdoorOpt.ClientSecret,
+			Certificate:      casdoorOpt.Certificate,
+			OrganizationName: casdoorOpt.OrganizationName,
+			ApplicationName:  casdoorOpt.ApplicationName,
+		}
+	} else {
+		return &casdoorsdk.AuthConfig{
+			Endpoint:         casdoorOpt.Endpoint,
+			ClientId:         casdoorOpt.AppBuiltinClientId,
+			ClientSecret:     casdoorOpt.AppBuiltinClientSecret,
+			Certificate:      casdoorOpt.AppBuiltinCertificate,
+			OrganizationName: BuiltInOrganization,
+			ApplicationName:  AppBuiltIn,
+		}
 	}
 }
 
 // 创建全局配置的casdoor client
 func NewCassdorClientXFromGlobal() *ClientX {
 	casdoorOpt := GetGlobalCasdoorOptions()
-	return NewCassdorClientX(CasdoorAuthConfigFromCasdoorOptions(casdoorOpt))
+	return NewCassdorClientX(CasdoorAuthConfigFromCasdoorOptions(casdoorOpt, false))
 }
 
 // get organization list by owner
