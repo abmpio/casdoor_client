@@ -1,7 +1,6 @@
 package sdk
 
 import (
-	"encoding/json"
 	"net/http"
 	"sync"
 
@@ -88,10 +87,6 @@ func GetOrganizationName() string {
 // get casdoor global options
 func GetGlobalCasdoorOptions() *optCasdoor.CasdoorOptions {
 	return configurationx.GetInstance().Casdoor
-	// casdoorOpt := &optCasdoor.CasdoorOptions{}
-	// configurationx.GetInstance().UnmarshalPropertiesTo(optCasdoor.ConfigurationKey, casdoorOpt)
-	// casdoorOpt.Normalize()
-	// return casdoorOpt
 }
 
 // create casdoorsdk.AuthConfig instance from optCasdoor.CasdoorOptions
@@ -121,47 +116,4 @@ func CasdoorAuthConfigFromCasdoorOptions(casdoorOpt *optCasdoor.CasdoorOptions, 
 func NewCassdorClientXFromGlobal() *ClientX {
 	casdoorOpt := GetGlobalCasdoorOptions()
 	return NewCassdorClientX(CasdoorAuthConfigFromCasdoorOptions(casdoorOpt, false))
-}
-
-// get organization list by owner
-func (x *ClientX) GetOrganizationsByOwner(owner string) ([]*casdoorsdk.Organization, error) {
-	queryMap := map[string]string{
-		"owner": owner,
-	}
-
-	url := x.GetUrl("get-organizations", queryMap)
-
-	bytes, err := x.DoGetBytes(url)
-	if err != nil {
-		return nil, err
-	}
-
-	var organizations []*casdoorsdk.Organization
-	err = json.Unmarshal(bytes, &organizations)
-	if err != nil {
-		return nil, err
-	}
-	return organizations, nil
-}
-
-// get organization list by owner
-func (x *ClientX) GetRolesByOwner(owner string) ([]*casdoorsdk.Role, error) {
-	queryMap := map[string]string{
-		"owner": owner,
-	}
-
-	url := x.GetUrl("get-roles", queryMap)
-
-	bytes, err := x.DoGetBytes(url)
-	if err != nil {
-		return nil, err
-	}
-
-	var roles []*casdoorsdk.Role
-	err = json.Unmarshal(bytes, &roles)
-	if err != nil {
-		return nil, err
-	}
-	return roles, nil
-
 }

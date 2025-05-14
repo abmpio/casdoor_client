@@ -43,3 +43,80 @@ func (x *ClientX) GetProviderWithSecret(owner, name string) (*casdoorsdk.Provide
 	}
 	return provider, nil
 }
+
+// get provider with secret
+// provider: provider
+func (x *ClientX) AddProviderWith(provider *casdoorsdk.Provider, optList ...func(*casdoorsdk.Provider)) (*casdoorsdk.Response, error) {
+	queryMap := map[string]string{
+		"id": fmt.Sprintf("%s/%s", provider.Owner, provider.Name),
+	}
+
+	for _, eachOpt := range optList {
+		eachOpt(provider)
+	}
+	postBytes, err := json.Marshal(provider)
+	if err != nil {
+		return nil, err
+	}
+
+	action := "add-provider"
+	resp, err := x.DoPost(action, queryMap, postBytes, false, false)
+	if err != nil {
+		return resp, err
+	}
+	return resp, nil
+}
+
+// update provider
+// name: provider name
+// provider: provider
+func (x *ClientX) UpdateProviderWith(name string, provider *casdoorsdk.Provider, optList ...func(*casdoorsdk.Provider)) (*casdoorsdk.Response, error) {
+	queryMap := map[string]string{
+		"id": fmt.Sprintf("%s/%s", provider.Owner, name),
+	}
+
+	for _, eachOpt := range optList {
+		eachOpt(provider)
+	}
+	postBytes, err := json.Marshal(provider)
+	if err != nil {
+		return nil, err
+	}
+
+	action := "update-provider"
+	resp, err := x.DoPost(action, queryMap, postBytes, false, false)
+	if err != nil {
+		return resp, err
+	}
+	if resp.Data != "Affected" {
+		return resp, fmt.Errorf("无效的数据")
+	}
+	return resp, nil
+}
+
+// update provider
+// name: provider name
+// provider: provider
+func (x *ClientX) DeleteProviderWith(provider *casdoorsdk.Provider, optList ...func(*casdoorsdk.Provider)) (*casdoorsdk.Response, error) {
+	queryMap := map[string]string{
+		"id": fmt.Sprintf("%s/%s", provider.Owner, provider.Name),
+	}
+
+	for _, eachOpt := range optList {
+		eachOpt(provider)
+	}
+	postBytes, err := json.Marshal(provider)
+	if err != nil {
+		return nil, err
+	}
+
+	action := "delete-provider"
+	resp, err := x.DoPost(action, queryMap, postBytes, false, false)
+	if err != nil {
+		return resp, err
+	}
+	if resp.Data != "Affected" {
+		return resp, fmt.Errorf("无效的数据")
+	}
+	return resp, nil
+}
