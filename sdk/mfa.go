@@ -29,6 +29,8 @@ func (x *ClientX) MfaSetupInitiate(f *MfaSetupInitiateForm) (*casdoorsdk.Respons
 }
 
 type MfaSetupVerifyForm struct {
+	Owner       string `form:"owner" json:"owner"`
+	Name        string `form:"name" json:"name"`
 	MfaType     string `form:"mfaType" json:"mfaType"`
 	Passcode    string `form:"passcode" json:"passcode"`
 	Secret      string `form:"secret" json:"secret"`
