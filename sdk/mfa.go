@@ -77,3 +77,46 @@ func (x *ClientX) MfaSetupEnable(f *MfaSetupEnableForm) (*casdoorsdk.Response, e
 
 	return resp, nil
 }
+
+type MfaDeleteForm struct {
+	Owner string `form:"owner" json:"owner"`
+	// user name
+	Name string `form:"name" json:"name"`
+}
+
+// delete MFA
+func (x *ClientX) MfaDelete(input *MfaDeleteForm) (*casdoorsdk.Response, error) {
+	bytes, err := json.Marshal(input)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := x.Client.DoPost("/delete-mfa", nil, bytes, true, false)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+type MfaSetPreferredForm struct {
+	Owner string `form:"owner" json:"owner"`
+	// user name
+	Name    string `form:"name" json:"name"`
+	MfaType string `form:"mfaType" json:"mfaType"`
+}
+
+// set preferred mfa
+func (x *ClientX) MfaSetPreferred(input *MfaSetPreferredForm) (*casdoorsdk.Response, error) {
+	bytes, err := json.Marshal(input)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := x.Client.DoPost("/set-preferred-mfa", nil, bytes, true, false)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
