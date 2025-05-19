@@ -52,3 +52,28 @@ func (x *ClientX) MfaSetupVerify(f *MfaSetupVerifyForm) (*casdoorsdk.Response, e
 
 	return resp, nil
 }
+
+type MfaSetupEnableForm struct {
+	Owner         string `form:"owner" json:"owner"`
+	Name          string `form:"name" json:"name"`
+	MfaType       string `form:"mfaType" json:"mfaType"`
+	Secret        string `form:"secret" json:"secret"`
+	Dest          string `form:"dest" json:"dest"`
+	CountryCode   string `form:"countryCode" json:"countryCode"`
+	RecoveryCodes string `form:"recoveryCodes" json:"recoveryCodes"`
+}
+
+// setup MFA enable
+func (x *ClientX) MfaSetupEnable(f *MfaSetupEnableForm) (*casdoorsdk.Response, error) {
+	bytes, err := json.Marshal(f)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := x.Client.DoPost("/mfa/setup/enable", nil, bytes, true, false)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
