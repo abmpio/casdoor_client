@@ -9,6 +9,12 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
+type UserX struct {
+	casdoorsdk.User
+
+	MultiFactorAuths []*casdoorsdk.MfaProps `json:"multiFactorAuths,omitempty"`
+}
+
 // reset phone
 func (x *ClientX) ResetPhone(accessToken string, code string, newPhone string) error {
 	param := make(map[string]string, 0)
@@ -140,6 +146,28 @@ func (x *ClientX) GetUserByField(organization, field, value string) (*casdoorsdk
 	}
 
 	var user *casdoorsdk.User
+	err = json.Unmarshal(bytes, &user)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+// get userx by organization,userId
+func (x *ClientX) GetUserXByUserId(organization, userId string) (*UserX, error) {
+	queryMap := map[string]string{
+		"owner":  organization,
+		"userId": userId,
+	}
+
+	url := x.GetUrl("get-user", queryMap)
+
+	bytes, err := x.DoGetBytes(url)
+	if err != nil {
+		return nil, err
+	}
+
+	var user *UserX
 	err = json.Unmarshal(bytes, &user)
 	if err != nil {
 		return nil, err
