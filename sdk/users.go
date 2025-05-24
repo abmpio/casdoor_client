@@ -174,3 +174,25 @@ func (x *ClientX) GetUserXByUserId(organization, userId string) (*UserX, error) 
 	}
 	return user, nil
 }
+
+// get userx by organization,username
+func (x *ClientX) GetEmailAndPhone(organization, userName string) (*UserX, error) {
+	queryMap := map[string]string{
+		"organization": organization,
+		"username":     userName,
+	}
+
+	url := x.GetUrl("get-email-and-phone", queryMap)
+
+	bytes, err := x.DoGetBytes(url)
+	if err != nil {
+		return nil, err
+	}
+
+	var user *UserX
+	err = json.Unmarshal(bytes, &user)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
