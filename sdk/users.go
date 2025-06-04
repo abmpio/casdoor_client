@@ -124,6 +124,33 @@ func (x *ClientX) UnlinkUserOAuth(user casdoorsdk.User, providerType string) err
 	return nil
 }
 
+// get user by organization
+// not paging
+func (x *ClientX) GetUsersByOrganization(organization string) ([]*casdoorsdk.User, error) {
+	queryMap := map[string]string{
+		"owner": organization,
+	}
+
+	url := x.GetUrl("get-users", queryMap)
+	response, err := x.DoGetResponse(url)
+	if err != nil {
+		return nil, err
+	}
+
+	dataBytes, err := json.Marshal(response.Data)
+	if err != nil {
+		return nil, err
+	}
+
+	var users []*casdoorsdk.User
+	err = json.Unmarshal(dataBytes, &users)
+	if err != nil {
+		return nil, errors.New("response data format is incorrect")
+	}
+
+	return users, nil
+}
+
 // get user by field value
 func (x *ClientX) GetUserByField(organization, field, value string) (*casdoorsdk.User, error) {
 	queryMap := map[string]string{
