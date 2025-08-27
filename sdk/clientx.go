@@ -33,7 +33,7 @@ func GetGlobalClientX() *ClientX {
 	if _global_clientx != nil {
 		return _global_clientx
 	}
-	_builtInAdminClientx_instanceOnece.Do(func() {
+	_global_clientx_instanceOnce.Do(func() {
 		_global_clientx = NewCassdorClientXFromGlobal()
 	})
 	return _global_clientx
@@ -44,7 +44,7 @@ func GetBuiltInAdminClientX() *ClientX {
 	if _builtInAdminClientx != nil {
 		return _builtInAdminClientx
 	}
-	_global_clientx_instanceOnce.Do(func() {
+	_builtInAdminClientx_instanceOnece.Do(func() {
 		_builtInAdminClientx = NewCassdorClientX(CasdoorAuthConfigFromCasdoorOptions(GetGlobalCasdoorOptions(), true))
 	})
 	return _builtInAdminClientx
